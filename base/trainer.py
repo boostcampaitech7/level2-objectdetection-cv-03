@@ -93,7 +93,7 @@ class Trainer:
         return total_loss / len(self.val_loader)
 
     def train(self) -> None:
-        # 전체 훈련 과정을 관리
+        # 전체 훈련 과정 관리
         for epoch in range(self.epochs):
             print(f"Epoch {epoch+1}/{self.epochs}")
             
