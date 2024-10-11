@@ -23,7 +23,7 @@ def setup_config(training=True):
         cfg.merge_from_file(model_zoo.get_config_file('COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml'))
         cfg.DATASETS.TEST = ('coco_trash_test',)
         cfg.DATALOADER.NUM_WORKERS = 2
-        cfg.OUTPUT_DIR = './output'
+        cfg.OUTPUT_DIR = '../../detectron2/output'
         cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, 'model_final.pth')
         cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128
         cfg.MODEL.ROI_HEADS.NUM_CLASSES = 10
