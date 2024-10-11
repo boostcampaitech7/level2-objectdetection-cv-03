@@ -3,7 +3,7 @@ from detectron2.engine import DefaultTrainer
 from detectron2.evaluation import COCOEvaluator
 from detectron2.data import build_detection_train_loader
 
-from augmentation import MyMapper
+from common.augmentation import MyMapper
 
 class MyTrainer(DefaultTrainer):
     
