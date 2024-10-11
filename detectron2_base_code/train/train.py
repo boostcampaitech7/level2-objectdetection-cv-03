@@ -1,7 +1,11 @@
+import sys
 import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from common.dataset import register_datasets
 from common.config import setup_config
-from train.trainer import MyTrainer
+from trainer import MyTrainer
 
 def main():
     # 데이터셋 등록
