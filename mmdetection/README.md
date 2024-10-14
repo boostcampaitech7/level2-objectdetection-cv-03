@@ -18,5 +18,6 @@ mmdetection/
 **1. config_default.py 기반으로 config 작성**
 
 **2. train.py 실행**
-  '''base
+
+  '''bash
   python train.py --config your_config
