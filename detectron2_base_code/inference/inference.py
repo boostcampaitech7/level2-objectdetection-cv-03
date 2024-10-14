@@ -21,7 +21,10 @@ def run_inference(cfg):
     for data in tqdm(test_loader):
         prediction_string = ''
         data = data[0]
-        outputs = predictor(data['image'])['instances']
+
+        image = data['image'].cpu().numpy().transpose(1, 2, 0)
+
+        outputs = predictor(image)['instances']
 
         targets = outputs.pred_classes.cpu().tolist()
         boxes = [i.cpu().detach().numpy() for i in outputs.pred_boxes]
