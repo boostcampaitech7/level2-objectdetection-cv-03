@@ -1,3 +1,4 @@
+### 디렉터리 구조
 
 ```
 mmdetection/
@@ -14,7 +15,9 @@ mmdetection/
 └── ...
 ```
 
+
 ### 사용법
+
 **1. config_default.py 기반으로 config 작성**
 
 **2. train.py 실행**
