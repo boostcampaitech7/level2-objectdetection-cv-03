@@ -19,5 +19,4 @@ mmdetection/
 
 **2. train.py 실행**
 
-  '''bash
-  python train.py --config your_config
+  'python train.py --config your_config'
