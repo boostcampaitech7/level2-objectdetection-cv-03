@@ -1,4 +1,6 @@
-your_project/
+
+```
+mmdetection/
 │
 ├── configs/
 │   └── _configs_/
@@ -10,3 +12,4 @@ your_project/
 ├── train.py                      # Main script for training
 ├── README.md                     # This documentation file
 └── ...
+```
