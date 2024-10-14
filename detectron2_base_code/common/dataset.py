@@ -5,7 +5,12 @@ from detectron2.data import MetadataCatalog
 def register_datasets():
     # 학습 데이터셋 등록
     try:
-        register_coco_instances('coco_trash_train', {}, '../../dataset/train.json', '../../dataset/')
+        register_coco_instances('coco_trash_train', {}, '../../dataset/train_split.json', '../../dataset/')
+    except AssertionError:
+        pass
+
+    try: 
+        register_coco_instances('coco_trash_val', {}, '../../dataset/val_split.json', '../../dataset/')
     except AssertionError:
         pass
 
