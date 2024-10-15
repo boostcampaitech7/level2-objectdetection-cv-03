@@ -1,0 +1,6 @@
+train: /data/ephemeral/home/PJU/yolo_series/train/images
+val: /data/ephemeral/home/PJU/yolo_series/val/images
+test: /data/ephemeral/home/PJU/yolo_series/test/images
+
+nc: 10
+names: ['General trash', 'Paper', 'Paper pack', 'Metal', 'Glass', 'Plastic', 'Styrofoam', 'Plastic bag', 'Battery', 'Clothing']
