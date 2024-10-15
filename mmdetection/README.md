@@ -7,7 +7,7 @@ mmdetection/
 │   └── _configs_/
 │       ├── __init__.py          
 │       ├── config_default.py     
-│       ├── config_cascade_rcnn.py 
+│       ├── cascade_rcnn_r101.py 
 │       └── ...                   
 │
 ├── train.py                      # Main script for training
