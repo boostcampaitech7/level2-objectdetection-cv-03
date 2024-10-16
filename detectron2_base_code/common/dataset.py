@@ -9,7 +9,7 @@ def register_datasets():
     except AssertionError:
         pass
 
-    try: 
+    try:
         register_coco_instances('coco_trash_val', {}, '../../dataset/val_split.json', '../../dataset/')
     except AssertionError:
         pass

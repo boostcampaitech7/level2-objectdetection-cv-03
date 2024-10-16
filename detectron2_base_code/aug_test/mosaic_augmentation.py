@@ -53,7 +53,7 @@ def MyMosaicMapper(dataset_dict, dataset_dicts=None):
     dataset_dict = copy.deepcopy(dataset_dict)
     
     # If dataset_dicts is provided, apply mosaic augmentation 50% of the time
-    if dataset_dicts and random.random() < 0.5:
+    if dataset_dicts and random.random() < 0.4:
         image, bboxes, labels = mosaic_augmentation(dataset_dicts)
         
         # Convert to tensor
@@ -77,11 +77,18 @@ def MyMosaicMapper(dataset_dict, dataset_dicts=None):
 
         transform_list = [
             T.RandomFlip(prob=0.5, horizontal=False, vertical=True),
-            T.RandomBrightness(0.8, 1.8),
-            T.RandomContrast(0.6, 1.3)
+            T.RandomBrightness(0.8, 1.5),
+            T.RandomContrast(0.6, 1.3),
+            T.RandomSaturation(0.8, 1.2),
+            T.RandomLighting(0.7),
+            T.ResizeShortestEdge(short_edge_length=(640, 800), sample_style="range")
         ]
         
         image, transforms = T.apply_transform_gens(transform_list, image)
+
+        # Apply Gaussian Blur using OpenCV
+        image = cv2.GaussianBlur(image, (5, 5), 0)  # Kernel size and sigma
+
         dataset_dict['image'] = torch.as_tensor(image.transpose(2, 0, 1).astype('float32'))
 
         annos = [

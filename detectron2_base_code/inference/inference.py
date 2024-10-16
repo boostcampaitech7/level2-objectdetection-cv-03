@@ -5,14 +5,14 @@ from tqdm import tqdm
 from detectron2.engine import DefaultPredictor
 from detectron2.data import build_detection_test_loader
 
-from common.augmentation import MyMapper
+from common.augmentation import MyBaseMapper
 
 def run_inference(cfg):
     # Predictor 설정
     predictor = DefaultPredictor(cfg)
 
     # Test Loader 생성
-    test_loader = build_detection_test_loader(cfg, 'coco_trash_test', MyMapper)
+    test_loader = build_detection_test_loader(cfg, 'coco_trash_test', MyBaseMapper)
 
     # 추론 및 결과 후처리
     prediction_strings = []
