@@ -14,7 +14,7 @@ def setup_config(training=True):
 
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url('COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml')
 
-        cfg.SOLVER.IMS_PER_BATCH = 4
+        cfg.SOLVER.IMS_PER_BATCH = 8
         cfg.SOLVER.BASE_LR = 0.001
         cfg.SOLVER.MAX_ITER = 15000
         cfg.SOLVER.STEPS = (8000, 12000)
