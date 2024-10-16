@@ -1,4 +1,4 @@
-img_scale = (512, 512)  # height, width
+img_scale = (640, 640) # height, width
 
 # dataset settings
 data_root = 'data/coco/'
@@ -13,14 +13,14 @@ train_pipeline = [
         border=(-img_scale[0] // 2, -img_scale[1] // 2)),
     dict(
         type='MixUp',
-        img_scale=img_scale,
         ratio_range=(0.8, 1.6),
+        img_scale=img_scale,
         pad_val=114.0),
     dict(type='RandomFlip', flip_ratio=1.0),
     dict(type='Resize', img_scale=img_scale, keep_ratio=True),
     # dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
-    dict(type='FilterAnnotations', min_gt_bbox_wh=(1, 1), keep_empty=False),
+    dict(type='FilterAnnotations', min_gt_bbox_wh=(0, 0), keep_empty=False),
     dict(type='DefaultFormatBundle'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
 ]
