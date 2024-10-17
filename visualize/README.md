@@ -1,6 +1,7 @@
 # 실행 방법
 1. test 데이터에 predict 하는 것처럼 validation data에 대해 predict
 2. csv 파일 저장 후 진행
+
 ## 실행하기 전
 기존 inference.ipynb 코드에 있는
 ```python
