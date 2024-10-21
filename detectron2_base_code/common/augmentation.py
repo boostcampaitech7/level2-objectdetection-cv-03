@@ -6,6 +6,26 @@ import torch
 from detectron2.data import detection_utils as utils
 import detectron2.data.transforms as T
 
+def apply_CLAHE(image, clip_limit=2.0, tile_grid_size=(8, 8)):
+    """Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) to an image."""
+    # Convert image to LAB color space
+    lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+    
+    # Split the LAB image into channels
+    l, a, b = cv2.split(lab)
+    
+    # Apply CLAHE to the L channel
+    clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=tile_grid_size)
+    cl = clahe.apply(l)
+    
+    # Merge the CLAHE enhanced L channel with the A and B channels
+    limg = cv2.merge((cl, a, b))
+    
+    # Convert back to BGR color space
+    final_img = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+    
+    return final_img
+
 def apply_cutout(image, n_holes=1, length=50):
     """
     Apply Cutout to the given image.
@@ -174,6 +194,9 @@ def MyBaseMapper(dataset_dict):
     dataset_dict = copy.deepcopy(dataset_dict)
     image = utils.read_image(dataset_dict['file_name'], format='BGR')
     
+    # Apply CLAHE augmentation
+    image = apply_CLAHE(image, clip_limit=2.0, tile_grid_size=(8, 8))
+    
     transform_list = [
             T.RandomFlip(prob=0.5, horizontal=False, vertical=True),
             T.RandomFlip(prob=0.5, horizontal=True, vertical=False),
@@ -187,8 +210,10 @@ def MyBaseMapper(dataset_dict):
     # Apply Cutout (for example, 1 hole of size 50)
     # image = apply_cutout(image, n_holes=1, length=50)
 
+    # Convert to tensor
     dataset_dict['image'] = torch.as_tensor(image.transpose(2, 0, 1).astype('float32'))
 
+    # Transform and filter annotations
     annos = [
         utils.transform_instance_annotations(obj, transforms, image.shape[:2])
         for obj in dataset_dict.pop('annotations')
