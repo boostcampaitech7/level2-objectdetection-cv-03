@@ -23,17 +23,18 @@ def setup_config(training=True):
 
         cfg.SOLVER.IMS_PER_BATCH = 4
         cfg.SOLVER.BASE_LR = 0.0001
-        cfg.SOLVER.MAX_ITER = 26000
-        cfg.SOLVER.STEPS = (10000, 20000)
+        cfg.SOLVER.MAX_ITER = 60000
+        cfg.SOLVER.STEPS = (20000, 40000)
         cfg.SOLVER.GAMMA = 0.1
-        cfg.SOLVER.CHECKPOINT_PERIOD = 2000
+        cfg.SOLVER.WEIGHT_DECAY = 0.0001
+        cfg.SOLVER.CHECKPOINT_PERIOD = 6000
 
         cfg.OUTPUT_DIR = '../../detectron2/output'
 
         cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128
         cfg.MODEL.ROI_HEADS.NUM_CLASSES = 10
 
-        cfg.TEST.EVAL_PERIOD = 2000
+        cfg.TEST.EVAL_PERIOD = 6000
     else:
         cfg.merge_from_file("/data/ephemeral/home/git/detectron2_base_code/swin/configs/SwinT/faster_rcnn_swint_T_FPN_3x_.yaml")
 
