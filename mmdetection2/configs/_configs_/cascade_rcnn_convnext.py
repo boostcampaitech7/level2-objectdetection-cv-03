@@ -16,17 +16,13 @@ def get_cfg():
 
     cfg.data.train.classes = classes
     cfg.data.train.img_prefix = root
-    cfg.data.train.ann_file = root + 'train_split.json'  # train json 정보
-
-    cfg.data.val.classes = classes
-    cfg.data.val.img_prefix = root
-    cfg.data.val.ann_file = root + 'val_split.json'  # val json 정보
+    cfg.data.train.ann_file = root + 'train.json'  # train json 정보
 
     cfg.data.test.classes = classes
     cfg.data.test.img_prefix = root
     cfg.data.test.ann_file = root + 'test.json'  # test json 정보
 
-    cfg.data.samples_per_gpu = 4
+    cfg.data.samples_per_gpu = 2
 
     cfg.seed = 2024
     cfg.gpu_ids = [0]

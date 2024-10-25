@@ -2,9 +2,9 @@
 from mmcv import Config
 from mmdet.utils import get_device
 
-model_dir = 'cascade_rcnn'
-model_name = 'cascade_rcnn_swin_fpn_1x_coco'
-work_dir = f'/data/ephemeral/home/work_dirs/{model_name}'
+model_dir = 'dyhead'
+model_name = 'atss_swin-l-p4-w12_fpn_dyhead_mstrain_2x_coco'
+work_dir = f'./work_dirs/{model_name}'
 
 def get_cfg():
     classes = ("General trash", "Paper", "Paper pack", "Metal", "Glass", 
@@ -14,15 +14,13 @@ def get_cfg():
 
     root = '/data/ephemeral/home/dataset/'
 
-    cfg.data.train.classes = classes
-    cfg.data.train.img_prefix = root
-    cfg.data.train.ann_file = root + 'train.json'  # train json 정보
+    cfg.data.train.dataset.classes = classes
+    cfg.data.train.dataset.img_prefix = root
+    cfg.data.train.dataset.ann_file = root + 'train.json'
 
     cfg.data.test.classes = classes
     cfg.data.test.img_prefix = root
     cfg.data.test.ann_file = root + 'test.json'  # test json 정보
-
-    cfg.data.samples_per_gpu = 6
 
     cfg.seed = 2024
     cfg.gpu_ids = [0]
@@ -35,10 +33,9 @@ def get_cfg():
         by_epoch=True
     )
 
-    for bbox_head in cfg.model.roi_head.bbox_head:
-        bbox_head.num_classes = 10
+    cfg.data.samples_per_gpu = 2
 
-    cfg.runner.max_epochs = 20
+    cfg.model.bbox_head.num_classes = 10 
 
     cfg.optimizer_config.grad_clip = dict(max_norm=35, norm_type=2)
     cfg.checkpoint_config = dict(max_keep_ckpts=3, interval=1)
