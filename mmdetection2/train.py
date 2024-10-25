@@ -32,7 +32,7 @@ def main():
     model.init_weights()
 
     # 모델 학습
-    train_detector(model, datasets, cfg, distributed=False, validate=True)
+    train_detector(model, datasets, cfg, distributed=False, validate=False)
 
 if __name__ == '__main__':
     sys.path.append('./')
