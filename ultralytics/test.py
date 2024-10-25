@@ -1,8 +1,11 @@
+import argparse
 from ultralytics import YOLO
 import os
 import pandas as pd
 
-def yolo_to_pascal_voc(results):
+def main(opt):
+    model = YOLO(opt.model)
+    results = model.predict(source=opt.source, conf=opt.conf, imgsz=opt.imgsz, stream=opt.stream)
     voc_results = []
     file_results = []
     root = 'test'
@@ -24,15 +27,30 @@ def yolo_to_pascal_voc(results):
         voc_results.append(voc_format)
         file_results.append(file_name)
     
-    return voc_results, file_results
+    submission = pd.DataFrame()
+    submission['PredictionString'] = voc_results
+    submission['image_id'] = file_results
 
-model = YOLO('/data/ephemeral/home/PJU/yolo_series/runs/detect/train2/weights/best.pt')
+    save_dir = opt.save_dir
+    csv_name = opt.name
+    submission.to_csv(os.path.join(save_dir, f'{csv_name}.csv'), index=None)
 
-results = model.predict(source='/data/ephemeral/home/PJU/dataset/test', conf=0.05, imgsz=512)
+def parse_args():
+    # argparse로 인자 받기
+    parser = argparse.ArgumentParser(description="Test YOLOv8 model")
+    
+    # 필요한 인자 추가
+    parser.add_argument('--model', type=str, required=True)
+    parser.add_argument('--source', type=str, default='/data/ephemeral/home/PJU/dataset/test')
+    parser.add_argument('--save_dir', type=str, default='/data/ephemeral/home/PJU/yolo_series')
+    parser.add_argument('--name', type=str, required=True)
+    parser.add_argument('--conf', type=float, default=0.05)
+    parser.add_argument('--imgsz', type=int, default=512)
+    parser.add_argument('--stream', type=bool, default=True)
 
-voc_results, file_results = yolo_to_pascal_voc(results)
+    # 인자 파싱
+    return parser.parse_args()
 
-submission = pd.DataFrame()
-submission['PredictionString'] = voc_results
-submission['image_id'] = file_results
-submission.to_csv('/data/ephemeral/home/PJU/yolo_series/yolov8_test3.csv', index=None)
+if __name__ == '__main__':
+    opt = parse_args()
+    main(opt)
