@@ -75,6 +75,7 @@ class MyTrainer(DefaultTrainer):
         return COCOEvaluator(dataset_name, cfg, False, output_folder)
 
 # Objective function for Optuna
+# 하이퍼파라미터 설정, 모델 학습이 진행되는 함수
 def objective(trial):
     # config 불러오기
     cfg = get_cfg()
@@ -89,13 +90,20 @@ def objective(trial):
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url('COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml')
     
     # 하이퍼파라미터를 Optuna에서 제안받기
-    cfg.SOLVER.IMS_PER_BATCH = trial.suggest_categorical('ims_per_batch', [2, 4, 8])
+    # 배치당 이미지 수를 결정
+    cfg.SOLVER.IMS_PER_BATCH = trial.suggest_categorical('ims_per_batch', [4, 8, 16])
+    # 학습률 결정 (1e-5 ~ 1e-2) - 학습률이 너무 작으면 학습이 느리고, 너무 크면 불안정함
     cfg.SOLVER.BASE_LR = trial.suggest_float('lr', 1e-5, 1e-2, log=True)
-    cfg.SOLVER.MAX_ITER = trial.suggest_int('max_iter', 1000, 20000)
+    # 학습의 최대 반복 횟수 결정
+    cfg.SOLVER.MAX_ITER = 5000 # 고정
+    # 학습률 감소를 적용할 시점 결정 (50%와 75% 지점)
     cfg.SOLVER.STEPS = (int(cfg.SOLVER.MAX_ITER * 0.5), int(cfg.SOLVER.MAX_ITER * 0.75))
+    # 학습률 감소 비율 결정
     cfg.SOLVER.GAMMA = trial.suggest_float('gamma', 0.1, 0.9)
 
+    # RoI(Region of Interest) 당 학습에 사용할 샘플 수 결정 (64, 128, 256 중 선택)
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = trial.suggest_categorical('batch_size_per_image', [64, 128, 256])
+    # 학습할 클래스 수 지정
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = 10  # Number of classes in dataset
     
     # Output directory
@@ -112,14 +120,14 @@ def objective(trial):
     val_loader = build_detection_test_loader(cfg, "coco_trash_test")
     metrics = trainer.test(cfg, trainer.model, evaluators=[evaluator])
 
-    # COCOEvaluator의 'bbox/AP' 값을 최종 objective로 사용
+    # COCOEvaluator의 'bbox/AP'(평균 precision) 값을 최종 objective로 사용
     return metrics['bbox']['AP']
 
 # Optuna study 생성 및 최적화 실행
+# 그리드 샘플링 방식
 study = optuna.create_study(direction='maximize', sampler=optuna.samplers.GridSampler({
-    'ims_per_batch': [2, 4, 8],
+    'ims_per_batch': [4, 8, 16],
     'lr': [1e-5, 1e-4, 1e-3],
-    'max_iter': [1000, 5000, 10000],
     'gamma': [0.1, 0.5, 0.9],
     'batch_size_per_image': [64, 128, 256]
 }))
