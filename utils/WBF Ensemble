@@ -1,0 +1,87 @@
+#WBF Ensemble
+
+import pandas as pd
+from pycocotools.coco import COCO
+import numpy as np
+from ensemble_boxes import *
+
+# 모델 경로들
+cascade_rcnn_files = [
+
+]
+
+# COCO 주석 로드
+annotation = '/content/dataset/test.json'
+coco = COCO(annotation)
+
+# 이미지 ID를 추출하기 위한 함수
+def extract_image_id(file_name):
+    return int(file_name.split('/')[-1].split('.')[0])
+
+# WBF 앙상블 함수
+def perform_wbf_ensemble(group_files, image_ids, coco):
+    submission_df = [pd.read_csv(file) for file in group_files]
+
+    prediction_strings = []
+    file_names = []
+
+    for image_id in image_ids:
+        image_id_int = extract_image_id(image_id)
+        prediction_string = ''
+        boxes_list = []
+        scores_list = []
+        labels_list = []
+
+        image_info = coco.loadImgs(image_id_int)
+        if not image_info:
+            print(f"Image ID {image_id_int}는 데이터셋에 없습니다.")
+            continue
+
+        image_info = image_info[0]
+
+        for df in submission_df:
+            predict_string = df[df['image_id'] == image_id]['PredictionString'].tolist()
+            if not predict_string:
+                continue
+
+            predict_string = predict_string[0]
+            predict_list = str(predict_string).split()
+
+            if len(predict_list) < 6:
+                continue
+
+            predict_list = np.reshape(predict_list, (-1, 6))
+
+            box_list = []
+            for box in predict_list[:, 2:6].astype(float).tolist():
+                box[0] /= image_info['width']
+                box[1] /= image_info['height']
+                box[2] /= image_info['width']
+                box[3] /= image_info['height']
+                box_list.append(box)
+
+            boxes_list.append(box_list)
+            scores_list.append(predict_list[:, 1].astype(float).tolist())
+            labels_list.append(predict_list[:, 0].astype(int).tolist())
+
+        if len(boxes_list):
+            boxes, scores, labels = weighted_boxes_fusion(boxes_list, scores_list, labels_list, iou_thr=0.55)
+
+            for box, score, label in zip(boxes, scores, labels):
+                prediction_string += f"{int(label)} {score:.6f} {box[0] * image_info['width']} {box[1] * image_info['height']} {box[2] * image_info['width']} {box[3] * image_info['height']} "
+
+        prediction_strings.append(prediction_string.strip())
+        file_names.append(image_id)
+
+    return pd.DataFrame({'PredictionString': prediction_strings, 'image_id': file_names})
+
+# 이미지 ID 추출
+all_image_ids = pd.read_csv(cascade_rcnn_files[0])['image_id'].tolist()
+
+# WBF 앙상블 수행
+# 모든 모델 파일을 사용하여 앙상블 수행
+result_df = perform_wbf_ensemble(cascade_rcnn_files, all_image_ids, coco)
+
+# 결과를 단일 CSV 파일로 저장
+result_df.to_csv('/content/Ensemble/3.csv', index=False)
+print("WBF ensemble results saved to /content/Ensemble/1.csv")
