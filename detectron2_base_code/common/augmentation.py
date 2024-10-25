@@ -200,8 +200,8 @@ def MyBaseMapper(dataset_dict):
     transform_list = [
             T.RandomFlip(prob=0.5, horizontal=False, vertical=True),
             T.RandomFlip(prob=0.5, horizontal=True, vertical=False),
-            T.RandomBrightness(0.8, 1.4),
-            T.RandomContrast(0.6, 1.3),
+            T.RandomBrightness(0.7, 1.5),
+            T.RandomContrast(0.5, 1.4),
             T.RandomCrop_CategoryAreaConstraint("absolute", (640, 640))
     ]
     
